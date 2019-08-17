@@ -25,77 +25,82 @@ class AttendanceSheet extends StatelessWidget {
                       children: <Widget>[
                         SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: List.generate(
-                              snapshot.documents.length,
-                              (index) {
-                                final String studentId =
-                                    snapshot.documents[index].documentID;
-                                final String names =
-                                    snapshot.documents[index].data['name'];
-                                return Row(
-                                  children: <Widget>[
-                                    GestureDetector(
-                                      onTap: () {
-                                        Navigator.of(context).push(
-                                            MaterialPageRoute(
-                                                builder:
-                                                    (BuildContext context) =>
-                                                        StudentProfile()));
-                                      },
-                                      child: Container(
-                                        width: 100,
-                                        height: 100,
-                                        decoration: BoxDecoration(
-                                            border: Border(
-                                                bottom: BorderSide(
-                                                    color: Colors.black)),
-                                            color: Colors.blue),
-                                        child: FittedBox(
-                                          child: Column(
-                                            children: [
-                                              Icon(Icons.account_circle),
-                                              Text(names),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    ...List.generate(1, (buttonIndex) {
-                                      final studentAttendance =
-                                          studentCollection
-                                              .document(studentId)
-                                              .collection('lessons')
-                                              .document('2019-08-18');
-                                      return StreamBuilder<DocumentSnapshot>(
-                                          stream: studentAttendance.snapshots(),
-                                          builder: (context, snapshot) {
-                                            if (!snapshot.hasData)
-                                              return CircularProgressIndicator();
-                                            final isPresent =
-                                                snapshot.data.data['present'];
-                                            return Container(
-                                              width: 50,
-                                              child: Checkbox(
-                                                onChanged: (bool value) =>
-                                                    studentAttendance.setData({
-                                                  'present': !isPresent
-                                                }),
-                                                value: isPresent,
-                                              ),
-                                            );
-                                          });
-                                    })
-                                  ],
-                                );
-                              },
-                            ),
+                          child: StudentColumn(
+                            studentCollection: studentCollection,
                           ),
                         ),
                       ],
                     ),
             ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class StudentColumn extends StatelessWidget {
+  const StudentColumn({
+    Key key,
+    @required this.studentCollection,
+  }) : super(key: key);
+
+  final CollectionReference studentCollection;
+
+  @override
+  Widget build(BuildContext context) {
+    final snapshot = Provider.of<QuerySnapshot>(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: List.generate(
+        snapshot.documents.length,
+        (index) {
+          final String studentId = snapshot.documents[index].documentID;
+          final String names = snapshot.documents[index].data['name'];
+          return Row(
+            children: <Widget>[
+              GestureDetector(
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (BuildContext context) => StudentProfile()));
+                },
+                child: Container(
+                  width: 100,
+                  height: 100,
+                  decoration: BoxDecoration(
+                      border: Border(bottom: BorderSide(color: Colors.black)),
+                      color: Colors.blue),
+                  child: FittedBox(
+                    child: Column(
+                      children: [
+                        Icon(Icons.account_circle),
+                        Text(names),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              ...List.generate(1, (buttonIndex) {
+                final studentAttendance = studentCollection
+                    .document(studentId)
+                    .collection('lessons')
+                    .document('2019-08-18');
+                return StreamBuilder<DocumentSnapshot>(
+                    stream: studentAttendance.snapshots(),
+                    builder: (context, snapshot) {
+                      if (!snapshot.hasData) return CircularProgressIndicator();
+                      final isPresent = snapshot.data.data['present'];
+                      return Container(
+                        width: 50,
+                        child: Checkbox(
+                          onChanged: (bool value) => studentAttendance
+                              .setData({'present': !isPresent}),
+                          value: isPresent,
+                        ),
+                      );
+                    });
+              })
+            ],
           );
         },
       ),

@@ -36,10 +36,12 @@ class MapScreenState extends State<StudentProfile>
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             new IconButton(
-                             icon :Icon( Icons.arrow_back_ios,
-                              color: Colors.black,
-                              size: 22.0,),
-                              onPressed: ()=> Navigator.of(context).pop(),
+                              icon: Icon(
+                                Icons.arrow_back_ios,
+                                color: Colors.black,
+                                size: 22.0,
+                              ),
+                              onPressed: () => Navigator.of(context).pop(),
                             ),
                             Padding(
                               padding: EdgeInsets.only(left: 25.0),
@@ -73,20 +75,21 @@ class MapScreenState extends State<StudentProfile>
                           ],
                         ),
                         Padding(
-                            padding: EdgeInsets.only(top: 90.0, right: 100.0),
-                            child: new Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                new CircleAvatar(
-                                  backgroundColor: Colors.red,
-                                  radius: 25.0,
-                                  child: new Icon(
-                                    Icons.camera_alt,
-                                    color: Colors.white,
-                                  ),
-                                )
-                              ],
-                            )),
+                          padding: EdgeInsets.only(top: 90.0, right: 100.0),
+                          child: new Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              new CircleAvatar(
+                                backgroundColor: Colors.red,
+                                radius: 25.0,
+                                child: new Icon(
+                                  Icons.camera_alt,
+                                  color: Colors.white,
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
                       ]),
                     )
                   ],
