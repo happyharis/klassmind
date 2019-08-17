@@ -4,14 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class AttendanceSheet extends StatelessWidget {
+  final studentCollection = Firestore.instance
+      .collection('classes')
+      .document('sk1100')
+      .collection('students');
   @override
   Widget build(BuildContext context) {
     return StreamProvider<QuerySnapshot>.value(
-      value: Firestore.instance
-          .collection('classes')
-          .document('sk1100')
-          .collection('students')
-          .snapshots(),
+      value: studentCollection.snapshots(),
       child: Consumer<QuerySnapshot>(
         builder: (BuildContext context, snapshot, _) {
           return Scaffold(
@@ -30,54 +30,63 @@ class AttendanceSheet extends StatelessWidget {
                             children: List.generate(
                               snapshot.documents.length,
                               (index) {
+                                final String studentId =
+                                    snapshot.documents[index].documentID;
                                 final String names =
                                     snapshot.documents[index].data['name'];
                                 return Row(
                                   children: <Widget>[
                                     GestureDetector(
-                                      onTap: () => Navigator.of(context).push(
-                                          MaterialPageRoute(
-                                              builder: (BuildContext context) =>
-                                                  StudentProfile())),
+                                      onTap: () {
+                                        Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                                builder:
+                                                    (BuildContext context) =>
+                                                        StudentProfile()));
+                                      },
                                       child: Container(
                                         width: 100,
                                         height: 100,
                                         decoration: BoxDecoration(
-                                          border: Border(
-                                              bottom: BorderSide(
-                                                  color: Colors.black)),
-                                          color: (index != 0)
-                                              ? Colors.blue
-                                              : Colors.transparent,
-                                        ),
+                                            border: Border(
+                                                bottom: BorderSide(
+                                                    color: Colors.black)),
+                                            color: Colors.blue),
                                         child: FittedBox(
                                           child: Column(
                                             children: [
-                                              if (index != 0)
-                                                Icon(Icons.account_circle),
-                                              if (index != 0) Text(names),
+                                              Icon(Icons.account_circle),
+                                              Text(names),
                                             ],
                                           ),
                                         ),
                                       ),
                                     ),
-                                    ...List.generate(
-                                        1,
-                                        (buttonIndex) => Container(
+                                    ...List.generate(1, (buttonIndex) {
+                                      final studentAttendance =
+                                          studentCollection
+                                              .document(studentId)
+                                              .collection('lessons')
+                                              .document('2019-08-18');
+                                      return StreamBuilder<DocumentSnapshot>(
+                                          stream: studentAttendance.snapshots(),
+                                          builder: (context, snapshot) {
+                                            if (!snapshot.hasData)
+                                              return CircularProgressIndicator();
+                                            final isPresent =
+                                                snapshot.data.data['present'];
+                                            return Container(
                                               width: 50,
-                                              child: index != 0
-                                                  ? Radio(
-                                                      groupValue: null,
-                                                      onChanged:
-                                                          (Null value) {},
-                                                      value: null,
-                                                    )
-                                                  : Text(
-                                                      '${buttonIndex.toString()}/4',
-                                                      textAlign:
-                                                          TextAlign.center,
-                                                    ),
-                                            ))
+                                              child: Checkbox(
+                                                onChanged: (bool value) =>
+                                                    studentAttendance.setData({
+                                                  'present': !isPresent
+                                                }),
+                                                value: isPresent,
+                                              ),
+                                            );
+                                          });
+                                    })
                                   ],
                                 );
                               },
