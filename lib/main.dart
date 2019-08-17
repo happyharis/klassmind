@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:klassmind/attendance_sheet.dart';
 import 'package:klassmind/login.dart';
 import 'package:flutter/material.dart';
 import 'package:klassmind/user_repository.dart';
@@ -34,7 +35,8 @@ class HomePage extends StatelessWidget {
             case Status.Authenticating:
               return Login();
             case Status.Authenticated:
-              return UserInfoPage(user: user.user);
+              // return UserInfoPage(user: user.user);
+              return AttendanceSheet();
           }
         },
       ),
