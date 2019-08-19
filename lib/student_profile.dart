@@ -1,5 +1,7 @@
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:klassmind/take_photo_screen.dart';
 
 class StudentProfile extends StatefulWidget {
   @override
@@ -79,13 +81,28 @@ class MapScreenState extends State<StudentProfile>
                           child: new Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
-                              new CircleAvatar(
-                                backgroundColor: Colors.red,
-                                radius: 25.0,
-                                child: new Icon(
+                              new FlatButton(
+                                child: Icon(
                                   Icons.camera_alt,
                                   color: Colors.white,
                                 ),
+                                onPressed: () async {
+                                  // Obtain a list of the available cameras on the device.
+                                  final cameras = await availableCameras();
+
+// Get a specific camera from the list of available cameras.
+                                  final firstCamera = cameras.first;
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (BuildContext context) =>
+                                          TakePictureScreen(
+                                        camera: firstCamera,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                shape: CircleBorder(),
+                                color: Colors.red,
                               )
                             ],
                           ),
