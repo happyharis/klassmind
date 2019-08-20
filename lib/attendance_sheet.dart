@@ -85,16 +85,21 @@ class StudentColumn extends StatelessWidget {
                     .document(studentId)
                     .collection('lessons')
                     .document('2019-08-18');
+                // final newDocLocation = Firestore.instance.collection(
+                //     'organisations/citc/terms/aug-oct-2019/skpl/sun-1100-sc/classes/2019-08-18/students');
                 return StreamBuilder<DocumentSnapshot>(
                     stream: studentAttendance.snapshots(),
                     builder: (context, snapshot) {
                       if (!snapshot.hasData) return CircularProgressIndicator();
                       final isPresent = snapshot.data.data['present'];
+                      final data = snapshot.data.data;
                       return Container(
                         width: 50,
                         child: Checkbox(
-                          onChanged: (bool value) => studentAttendance
-                              .setData({'present': !isPresent}),
+                          onChanged: (bool value) {
+                            return studentAttendance
+                                .setData({'present': !isPresent});
+                          },
                           value: isPresent,
                         ),
                       );
